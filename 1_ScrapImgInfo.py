@@ -3,7 +3,7 @@ PAGE_URL_LIST = []
 IMG_LIST = []
 BASE_PAGE_URL = 'https://www.doutula.com/photo/list/?page='
 #20170822,网站共有933页图片
-for i in range(1, 20):
+for i in range(1, 934):
 	url = BASE_PAGE_URL + str(i)
 	PAGE_URL_LIST.append(url)
 
@@ -34,9 +34,9 @@ class Producer(threading.Thread):
 	def run(self):
 		while PAGE_URL_LIST:
 			try:
-				# con.acquire()
+				con.acquire()
 				url = PAGE_URL_LIST.pop()
-				# con.release()
+				con.release()
 				response = requests.get(url)
 				soup = BeautifulSoup(response.content, 'lxml')
 				img_list = soup.find_all('img', class_="img-responsive lazy image_dta")
@@ -45,6 +45,7 @@ class Producer(threading.Thread):
 			except:
 				# con.wait(5)
 				print('%s: List is empty, ready to quit!' % (self.name))
+			# time.sleep(15)
 
 class Consumer(threading.Thread):
 	def __init__(self, q, name):
@@ -55,9 +56,9 @@ class Consumer(threading.Thread):
 	def run(self):
 		while IMG_LIST:
 			try:
-				# con.acquire()
+				con.acquire()
 				img = IMG_LIST.pop()
-				# con.release()
+				con.release()
 				filename = str(img['alt'])
 				src = str(img['data-original'])
 				filesuffix = src.split('/')[-1]
@@ -68,15 +69,15 @@ class Consumer(threading.Thread):
 				urllib.request.urlretrieve(src, path)
 				print('%s: %i img in list' % (self.name, len(IMG_LIST)))
 			except:
-				# con.wait(10)
+				time.sleep(3)
 				print('%s: List is empty, ready to quit!' % (self.name))
 
 queue = Queue()
-for i in range(0, 10):
+for i in range(0, 1):
     p = Producer(queue, 'producer%i' % i)
     p.start()
-    p.join()
-for i in range(0, 20):
+time.sleep(5)
+for i in range(0, 30):
     c = Consumer(queue, 'consumer%i' % i)
     c.start()
 
