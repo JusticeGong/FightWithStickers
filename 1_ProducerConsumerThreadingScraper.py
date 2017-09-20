@@ -3,7 +3,7 @@ PAGE_URL_LIST = []
 IMG_LIST = []
 BASE_PAGE_URL = 'https://www.doutula.com/photo/list/?page='
 #20170822,网站共有933页图片
-for i in range(1, 934):
+for i in range(1, 15):
 	url = BASE_PAGE_URL + str(i)
 	PAGE_URL_LIST.append(url)
 
@@ -73,7 +73,7 @@ class Consumer(threading.Thread):
 				print('%s: List is empty, ready to quit!' % (self.name))
 
 queue = Queue()
-for i in range(0, 1):
+for i in range(0, 5):
     p = Producer(queue, 'producer%i' % i)
     p.start()
 time.sleep(5)
